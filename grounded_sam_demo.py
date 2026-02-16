@@ -17,7 +17,6 @@ from GroundingDINO.groundingdino.models import build_model
 from GroundingDINO.groundingdino.util.slconfig import SLConfig
 from GroundingDINO.groundingdino.util.utils import clean_state_dict, get_phrases_from_posmap
 
-
 # segment anything
 from segment_anything import (
     sam_model_registry,
@@ -95,7 +94,8 @@ def show_mask(mask, ax, random_color=False):
     if random_color:
         color = np.concatenate([np.random.random(3), np.array([0.6])], axis=0)
     else:
-        color = np.array([30/255, 144/255, 255/255, 0.6])
+        # color = np.array([30/255, 144/255, 255/255, 0.6])
+        color = np.array([128/255, 64/255, 128/255, 1.0])
     h, w = mask.shape[-2:]
     mask_image = mask.reshape(h, w, 1) * color.reshape(1, 1, -1)
     ax.imshow(mask_image)
@@ -117,7 +117,7 @@ def save_mask_data(output_dir, mask_list, box_list, label_list):
     plt.figure(figsize=(10, 10))
     plt.imshow(mask_img.numpy())
     plt.axis('off')
-    plt.savefig(os.path.join(output_dir, 'mask.jpg'), bbox_inches="tight", dpi=300, pad_inches=0.0)
+    # plt.savefig(os.path.join(output_dir, 'mask.jpg'), bbox_inches="tight", dpi=300, pad_inches=0.0)
 
     json_data = [{
         'value': value,
@@ -133,8 +133,8 @@ def save_mask_data(output_dir, mask_list, box_list, label_list):
             'logit': float(logit),
             'box': box.numpy().tolist(),
         })
-    with open(os.path.join(output_dir, 'mask.json'), 'w') as f:
-        json.dump(json_data, f)
+    # with open(os.path.join(output_dir, 'mask.json'), 'w') as f:
+    #     json.dump(json_data, f)
 
 
 if __name__ == "__main__":
@@ -192,7 +192,7 @@ if __name__ == "__main__":
     model = load_model(config_file, grounded_checkpoint, bert_base_uncased_path, device=device)
 
     # visualize raw image
-    image_pil.save(os.path.join(output_dir, "raw_image.jpg"))
+    # image_pil.save(os.path.join(output_dir, "raw_image.jpg"))
 
     # run grounding dino model
     boxes_filt, pred_phrases = get_grounding_output(
@@ -229,13 +229,16 @@ if __name__ == "__main__":
     plt.figure(figsize=(10, 10))
     plt.imshow(image)
     for mask in masks:
-        show_mask(mask.cpu().numpy(), plt.gca(), random_color=True)
-    for box, label in zip(boxes_filt, pred_phrases):
-        show_box(box.numpy(), plt.gca(), label)
+        show_mask(mask.cpu().numpy(), plt.gca(), random_color=False)
+    # for box, label in zip(boxes_filt, pred_phrases):
+    #     show_box(box.numpy(), plt.gca(), label)
 
+    # input_image のファイル名を取得して拡張子を .jpg に変更
+    output_filename = os.path.splitext(os.path.basename(image_path))[0]
+    output_filename = f"{output_filename}_output.jpg"
     plt.axis('off')
     plt.savefig(
-        os.path.join(output_dir, "grounded_sam_output.jpg"),
+        os.path.join(output_dir, output_filename),
         bbox_inches="tight", dpi=300, pad_inches=0.0
     )
 
