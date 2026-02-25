@@ -9,14 +9,17 @@ IMAGE_PATH = "assets/demo7.jpg"
 TEXT_PROMPT = "Horse. Clouds. Grasses. Sky. Hill."
 BOX_TRESHOLD = 0.35
 TEXT_TRESHOLD = 0.25
-FP16_INFERENCE = True
+FP16_INFERENCE = False
 
 image_source, image = load_image(IMAGE_PATH)
 model = load_model(CONFIG_PATH, CHECKPOINT_PATH)
 
-if FP16_INFERENCE:
-    image = image.half()
-    model = model.half()
+model = model.to(DEVICE).float()   # 明示的にfloat32へ
+image = image.to(DEVICE).float()
+
+# if FP16_INFERENCE:
+#     image = image.half()
+#     model = model.half()
 
 boxes, logits, phrases = predict(
     model=model,
