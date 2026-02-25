@@ -64,7 +64,6 @@ image_files = [f for f in os.listdir(IMAGE_DIR) if f.lower().endswith(('.png', '
 times = []
 
 for image_file in image_files:
-    start_time = time.time()
     image_path = os.path.join(IMAGE_DIR, image_file)
     image = cv2.imread(image_path)
 
@@ -155,7 +154,6 @@ for image_file in image_files:
     cv2.imwrite(output_path, annotated_image)
 
     print(f"{image_file} done.")
-    print(f"処理時間: {time.time() - start_time:.6f} sec.")
 if len(times) > 5:
     print(f"平均処理時間: {np.mean(times[5:]):.6f} sec.")
 else:
