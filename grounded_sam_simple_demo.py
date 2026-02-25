@@ -10,6 +10,7 @@ from segment_anything import sam_model_registry, sam_hq_model_registry, SamPredi
 
 import time
 import os
+from supervision import Color
 
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -132,7 +133,7 @@ for image_file in image_files:
 
     # annotate image with detections
     # box_annotator = sv.BoxAnnotator()
-    mask_annotator = sv.MaskAnnotator()
+    mask_annotator = sv.MaskAnnotator(color=Color(128, 64, 128), opacity=0.8)
 
     # labels = [
     #     f"{CLASSES[class_id]} {confidence:0.2f}" 
