@@ -64,6 +64,7 @@ image_files = [f for f in os.listdir(IMAGE_DIR) if f.lower().endswith(('.png', '
 times = []
 
 for image_file in image_files:
+    start_time = time.time()
     image_path = os.path.join(IMAGE_DIR, image_file)
     image = cv2.imread(image_path)
 
@@ -101,19 +102,19 @@ for image_file in image_files:
         # cv2.imwrite("groundingdino_annotated_image.jpg", annotated_frame)
 
 
-        # # NMS post process
-        # print(f"Before NMS: {len(detections.xyxy)} boxes")
-        # nms_idx = torchvision.ops.nms(
-        #     torch.from_numpy(detections.xyxy), 
-        #     torch.from_numpy(detections.confidence), 
-        #     NMS_THRESHOLD
-        # ).numpy().tolist()
+        # NMS post process
+        print(f"Before NMS: {len(detections.xyxy)} boxes")
+        nms_idx = torchvision.ops.nms(
+            torch.from_numpy(detections.xyxy), 
+            torch.from_numpy(detections.confidence), 
+            NMS_THRESHOLD
+        ).numpy().tolist()
 
-        # detections.xyxy = detections.xyxy[nms_idx]
-        # detections.confidence = detections.confidence[nms_idx]
-        # detections.class_id = detections.class_id[nms_idx]
+        detections.xyxy = detections.xyxy[nms_idx]
+        detections.confidence = detections.confidence[nms_idx]
+        detections.class_id = detections.class_id[nms_idx]
 
-        # print(f"After NMS: {len(detections.xyxy)} boxes")
+        print(f"After NMS: {len(detections.xyxy)} boxes")
 
         # convert detections to masks
         detections.mask = segment(
@@ -154,6 +155,7 @@ for image_file in image_files:
     cv2.imwrite(output_path, annotated_image)
 
     print(f"{image_file} done.")
+    print(f"処理時間: {time.time() - start_time:.6f} sec.")
 if len(times) > 5:
     print(f"平均処理時間: {np.mean(times[5:]):.6f} sec.")
 else:
