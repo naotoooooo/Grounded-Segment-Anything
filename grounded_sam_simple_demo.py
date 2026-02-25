@@ -154,7 +154,7 @@ for image_file in image_files:
     cv2.imwrite(output_path, annotated_image)
 
     print(f"{image_file} done.")
- if len(times) > 5:
+if len(times) > 5:
     print(f"平均処理時間: {np.mean(times[5:]):.6f} sec.")
 else:
     print(f"平均処理時間: {np.mean(times):.6f} sec.")
