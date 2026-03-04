@@ -54,7 +54,7 @@ def segment(sam_predictor: SamPredictor, image: np.ndarray, xyxy: np.ndarray) ->
 IMAGE_DIR = "./input"
 OUTPUT_DIR = "./output"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
-CLASSES = ["road"]
+CLASSES = ["pavement"]
 BOX_THRESHOLD = 0.25
 TEXT_THRESHOLD = 0.25
 NMS_THRESHOLD = 0.8
@@ -68,12 +68,14 @@ for image_file in image_files:
     image_path = os.path.join(IMAGE_DIR, image_file)
     image = cv2.imread(image_path)
 
-    # inference
-    start = torch.cuda.Event(enable_timing=True)
-    end = torch.cuda.Event(enable_timing=True)
+    # # inference
+    # start = torch.cuda.Event(enable_timing=True)
+    # end = torch.cuda.Event(enable_timing=True)
+    
+    start_time = time.time()
        
     with torch.no_grad(): 
-        start.record()
+        # start.record()
         # detect objects
         detections = grounding_dino_model.predict_with_classes(
             image=image,
@@ -122,13 +124,17 @@ for image_file in image_files:
             image=cv2.cvtColor(image, cv2.COLOR_BGR2RGB),
             xyxy=detections.xyxy
         )
-        end.record()
-        
-    torch.cuda.synchronize()
-    elapsed_time = start.elapsed_time(end)
-    times.append(elapsed_time / 1000)
+        # end.record()
     
-    print(elapsed_time / 1000, 'sec.')
+    end_time = time.time() - start_time
+    print(f"end_time: {end_time:.6f} sec.")
+    times.append(end_time)
+        
+    # torch.cuda.synchronize()
+    # elapsed_time = start.elapsed_time(end)
+    # times.append(elapsed_time / 1000)
+    
+    # print(elapsed_time / 1000, 'sec.')
 
 
     # annotate image with detections
@@ -155,7 +161,7 @@ for image_file in image_files:
     cv2.imwrite(output_path, annotated_image)
 
     print(f"{image_file} done.")
-if len(times) > 5:
+if len(times) > 3:
     print(f"平均処理時間: {np.mean(times[5:]):.6f} sec.")
 else:
     print(f"平均処理時間: {np.mean(times):.6f} sec.")
