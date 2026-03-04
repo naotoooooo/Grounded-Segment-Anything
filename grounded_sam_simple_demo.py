@@ -21,17 +21,17 @@ GROUNDING_DINO_CONFIG_PATH = "GroundingDINO/groundingdino/config/GroundingDINO_S
 GROUNDING_DINO_CHECKPOINT_PATH = "./groundingdino_swinb_cogcoor.pth"
 
 # Segment-Anything checkpoint
-# SAM_ENCODER_VERSION = "vit_h"
-# SAM_CHECKPOINT_PATH = "./sam_vit_h_4b8939.pth"
 SAM_ENCODER_VERSION = "vit_h"
-SAM_CHECKPOINT_PATH = "./sam_hq_vit_h.pth"
+SAM_CHECKPOINT_PATH = "./sam_vit_h_4b8939.pth"
+# SAM_ENCODER_VERSION = "vit_h"
+# SAM_CHECKPOINT_PATH = "./sam_hq_vit_h.pth"
 
 # Building GroundingDINO inference model
 grounding_dino_model = Model(model_config_path=GROUNDING_DINO_CONFIG_PATH, model_checkpoint_path=GROUNDING_DINO_CHECKPOINT_PATH)
 
 # Building SAM Model and SAM Predictor
-# sam = sam_model_registry[SAM_ENCODER_VERSION](checkpoint=SAM_CHECKPOINT_PATH)
-sam = sam_hq_model_registry[SAM_ENCODER_VERSION](checkpoint=SAM_CHECKPOINT_PATH)
+sam = sam_model_registry[SAM_ENCODER_VERSION](checkpoint=SAM_CHECKPOINT_PATH)
+# sam = sam_hq_model_registry[SAM_ENCODER_VERSION](checkpoint=SAM_CHECKPOINT_PATH)
 sam.to(device=DEVICE)
 sam_predictor = SamPredictor(sam)
 
