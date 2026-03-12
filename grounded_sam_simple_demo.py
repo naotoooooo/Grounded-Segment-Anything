@@ -25,6 +25,8 @@ SAM_ENCODER_VERSION = "vit_h"
 SAM_CHECKPOINT_PATH = "./sam_vit_h_4b8939.pth"
 # SAM_ENCODER_VERSION = "vit_h"
 # SAM_CHECKPOINT_PATH = "./sam_hq_vit_h.pth"
+SAM_ENCODER_VERSION = "vit_l"
+SAM_CHECKPOINT_PATH = "./sam_vit_l_0b3195.pth"
 
 # Building GroundingDINO inference model
 grounding_dino_model = Model(model_config_path=GROUNDING_DINO_CONFIG_PATH, model_checkpoint_path=GROUNDING_DINO_CHECKPOINT_PATH)
