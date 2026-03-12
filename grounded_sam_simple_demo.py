@@ -11,8 +11,16 @@ from segment_anything import sam_model_registry, sam_hq_model_registry, SamPredi
 import time
 import os
 from supervision import Color
+import shutil
+import argparse
 
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--classes', type=str, default="runnable area", help='検出したいクラス名（例: "runnable area"）')
+args = parser.parse_args()
+
+CLASSES = [args.classes]
 
 # GroundingDINO config and checkpoint
 # GROUNDING_DINO_CONFIG_PATH = "GroundingDINO/groundingdino/config/GroundingDINO_SwinT_OGC.py"
@@ -21,8 +29,8 @@ GROUNDING_DINO_CONFIG_PATH = "GroundingDINO/groundingdino/config/GroundingDINO_S
 GROUNDING_DINO_CHECKPOINT_PATH = "./groundingdino_swinb_cogcoor.pth"
 
 # Segment-Anything checkpoint
-SAM_ENCODER_VERSION = "vit_h"
-SAM_CHECKPOINT_PATH = "./sam_vit_h_4b8939.pth"
+# SAM_ENCODER_VERSION = "vit_h"
+# SAM_CHECKPOINT_PATH = "./sam_vit_h_4b8939.pth"
 # SAM_ENCODER_VERSION = "vit_h"
 # SAM_CHECKPOINT_PATH = "./sam_hq_vit_h.pth"
 SAM_ENCODER_VERSION = "vit_l"
@@ -53,10 +61,16 @@ def segment(sam_predictor: SamPredictor, image: np.ndarray, xyxy: np.ndarray) ->
 
 # Predict classes and hyper-param for GroundingDINO
 # SOURCE_IMAGE_PATH = "./input/image_2.png"
-IMAGE_DIR = "./input"
-OUTPUT_DIR = "./output"
-os.makedirs(OUTPUT_DIR, exist_ok=True)
-CLASSES = ["pavement"]
+IMAGE_DIR = "./input_robomech"
+
+ # Directory to save results    
+output_dir = f'robomech_groundedsam/{args.classes}'
+# Clear output_dir if it exists, then recreate it
+if os.path.exists(output_dir):
+    shutil.rmtree(output_dir)  # Remove all contents of the directory
+os.makedirs(output_dir, exist_ok=True)
+
+# CLASSES = ["runnable area"]
 BOX_THRESHOLD = 0.25
 TEXT_THRESHOLD = 0.25
 NMS_THRESHOLD = 0.8
@@ -159,7 +173,7 @@ for image_file in image_files:
     # annotated_image = box_annotator.annotate(scene=annotated_image, detections=detections)
     
     # 保存ファイル名を決定
-    output_path = os.path.join(OUTPUT_DIR, f"grounded_sam_{os.path.splitext(image_file)[0]}.jpg")
+    output_path = os.path.join(output_dir, f"grounded_sam_{os.path.splitext(image_file)[0]}.jpg")
     cv2.imwrite(output_path, annotated_image)
 
     print(f"{image_file} done.")
